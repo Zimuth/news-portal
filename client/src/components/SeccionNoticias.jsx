@@ -78,7 +78,7 @@ function SeccionNoticias({ news = [] }) {
                 className="min-w-[320px] max-w-[320px] bg-white shadow-lg rounded-xl overflow-hidden flex-shrink-0 hover:scale-105 transition duration-300"
               >
                 <img
-                  src={item.image}
+                  src={item.image || "https://via.placeholder.com/400x200?text=Sin+imagen"}
                   alt={item.title}
                   className="w-full h-48 object-cover"
                 />

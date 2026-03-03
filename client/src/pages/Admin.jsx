@@ -32,7 +32,15 @@ function Admin({ refreshNews }) {
   };
 
   useEffect(() => {
-    fetchNews();
+    const load = async () => {
+      try {
+        const res = await axios.get("/api/news");
+        setNews(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    load();
   }, []);
 
   // Publicar o actualizar
@@ -40,15 +48,19 @@ function Admin({ refreshNews }) {
     e.preventDefault();
 
     try {
+      const payload = {
+        title: form.title,
+        content: form.content,
+        // solo enviamos imagen si hay url
+        ...(form.image ? { image: form.image } : {}),
+      };
+
       if (form.id) {
-        await axios.put(
-          `/api/news/${form.id}`,
-          form
-        );
+        await axios.put(`/api/news/${form.id}`, payload);
         showToast("Noticia actualizada correctamente");
       } else {
         await axios.post("/api/news", {
-          ...form,
+          ...payload,
           date: new Date().toISOString().split("T")[0],
         });
         showToast("Noticia publicada correctamente");
@@ -157,13 +169,12 @@ function Admin({ refreshNews }) {
 
         <input
           type="text"
-          placeholder="URL Imagen"
+          placeholder="URL Imagen (opcional)"
           className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
           value={form.image}
           onChange={(e) =>
             setForm({ ...form, image: e.target.value })
           }
-          required
         />
 
         <div className="flex justify-end">

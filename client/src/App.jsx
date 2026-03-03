@@ -34,7 +34,15 @@ function App() {
   };
 
   useEffect(() => {
-    fetchNews();
+    const load = async () => {
+      try {
+        const res = await axios.get("/api/news");
+        setNews(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    load();
   }, []);
 
   return (
