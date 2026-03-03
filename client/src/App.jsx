@@ -26,7 +26,7 @@ function App() {
 
   const fetchNews = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/news");
+      const res = await axios.get("/api/news");
       setNews(res.data);
     } catch (err) {
       console.error(err);

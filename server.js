@@ -68,8 +68,13 @@ app.delete("/api/news/:id", (req, res) => {
 // Servir frontend compilado
 app.use(express.static(path.join(__dirname, "client/dist")));
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "client/dist/index.html"));
+// Cualquier ruta que no sea /api redirige a index.html
+app.all('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+  } else {
+    res.status(404).send('API route not found');
+  }
 });
 
 app.listen(PORT, () => {
