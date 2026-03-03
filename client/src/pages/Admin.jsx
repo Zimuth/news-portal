@@ -24,7 +24,7 @@ function Admin({ refreshNews }) {
   // Cargar noticias solo para el panel
   const fetchNews = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/news");
+      const res = await axios.get("/api/news");
       setNews(res.data);
     } catch (error) {
       console.error("Error cargando noticias:", error);
@@ -42,12 +42,12 @@ function Admin({ refreshNews }) {
     try {
       if (form.id) {
         await axios.put(
-          `http://localhost:5000/api/news/${form.id}`,
+          `/api/news/${form.id}`,
           form
         );
         showToast("Noticia actualizada correctamente");
       } else {
-        await axios.post("http://localhost:5000/api/news", {
+        await axios.post("/api/news", {
           ...form,
           date: new Date().toISOString().split("T")[0],
         });
@@ -78,7 +78,7 @@ function Admin({ refreshNews }) {
   // Eliminar confirmado
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/news/${deleteId}`);
+      await axios.delete(`/api/news/${deleteId}`);
       showToast("Noticia eliminada correctamente");
       fetchNews();
       refreshNews(); // 🔥 actualiza Home
