@@ -1,26 +1,76 @@
 const express = require("express");
-const cors = require("cors");
-const fs = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
+const cors = require("cors");
 
 const app = express();
+const PORT = 5000;
+
 app.use(cors());
 app.use(express.json());
 
-const FILE_PATH = path.join(__dirname, "content", "noticias.json");
+const filePath = path.join(__dirname, "data", "news.json");
 
-// Obtener noticias
-app.get("/api/noticias", async (req, res) => {
-  const data = await fs.readJson(FILE_PATH);
-  res.json(data);
+// Función segura para leer noticias
+const getNews = () => {
+  try {
+    const data = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(data || "[]");
+  } catch (error) {
+    console.error("Error leyendo archivo:", error);
+    return [];
+  }
+};
+
+// Obtener todas
+app.get("/api/news", (req, res) => {
+  res.json(getNews());
 });
 
-// Guardar noticias
-app.post("/api/noticias", async (req, res) => {
-  await fs.writeJson(FILE_PATH, req.body, { spaces: 2 });
-  res.json({ message: "Noticias actualizadas correctamente" });
+// Crear noticia
+app.post("/api/news", (req, res) => {
+  const news = getNews();
+
+  const newNews = {
+    ...req.body,
+    id: Date.now(),
+  };
+
+  news.push(newNews);
+
+  fs.writeFileSync(filePath, JSON.stringify(news, null, 2));
+  res.json(newNews);
 });
 
-app.listen(5000, () => {
-  console.log("Servidor corriendo en puerto 5000");
+// Editar noticia
+app.put("/api/news/:id", (req, res) => {
+  let news = getNews();
+
+  news = news.map(item =>
+    item.id == req.params.id ? { ...item, ...req.body } : item
+  );
+
+  fs.writeFileSync(filePath, JSON.stringify(news, null, 2));
+  res.json({ message: "Noticia actualizada" });
+});
+
+// Eliminar noticia
+app.delete("/api/news/:id", (req, res) => {
+  let news = getNews();
+
+  news = news.filter(item => item.id != req.params.id);
+
+  fs.writeFileSync(filePath, JSON.stringify(news, null, 2));
+  res.json({ message: "Noticia eliminada" });
+});
+
+// Servir frontend compilado
+app.use(express.static(path.join(__dirname, "client/dist")));
+
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist/index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

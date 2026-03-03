@@ -1,8 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
 /* Opcional: fuente y fondo global */
 body {
   @apply bg-gray-100 text-gray-800;
+}
+/* Ocultar scroll horizontal */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
